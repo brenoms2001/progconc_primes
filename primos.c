@@ -5,7 +5,8 @@
 #include "timer.h"
 
 long long int *lista;
-
+int primos = 0;
+pthread_mutex_t mutex;
 typedef struct{
     int id; //identificador do elemento que a thread ira processar
     long long int dim; //dimensao das estruturas de entrada (matriz quadrada)
@@ -119,9 +120,12 @@ void *tarefa(void *arg) {
     tArgs *args = (tArgs*) arg;
     for(int i = args->id; i < args->dim; i += args->nthreads){
         if(ehPrimo(lista[i])) {
+            pthread_mutex_lock(&mutex);
             #ifdef TEXTO
             fprintf(stdout, "%lld é primo\n", lista[i]);
             #endif
+            primos++;
+            pthread_mutex_unlock(&mutex);           
         }
     }   
     pthread_exit(NULL);
